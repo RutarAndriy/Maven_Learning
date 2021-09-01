@@ -3,7 +3,7 @@ Apache Maven - система збирання та управління java-п
 
 ## Зміст  
 
-+ [Інсталяція Apache Maven]()
++ [Інсталяція Apache Maven](#інсталяція-apache-maven)
 + [Створення нового Maven-проекту]()
 + [Структура Maven-проекту]()
 + [Maven POM]()
