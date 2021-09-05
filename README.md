@@ -75,6 +75,7 @@ POM (Project Object Model) є базовим модулем Maven. Це спец
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!-- Версія pom-моделі -->
     <modelVersion>4.0.0</modelVersion>
     
     <!-- Інформація про проект -->
@@ -157,12 +158,16 @@ POM-файл використовує xml-теги для конфігураці
 
 ```xml
 <properties>
+
     <!-- Версія бібліотеки junit-->
     <junit.junit>4.12</junit.junit>
+
     <!-- Версія java-компілятора --->
     <maven.compiler.target>16</maven.compiler.target>
+
     <!-- Користувацька змінна custom_var-->
     <custom_var>25.04.1995</custom_var>
+
 </properties>
 ```
 
@@ -170,15 +175,64 @@ POM-файл використовує xml-теги для конфігураці
 
 ```xml
 <dependency>
+
+    <!-- Підключаємо бібліотеку junit -->
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
+
     <!-- Підставляємо значення змінної <junit.junit> -->
     <version>${junit.junit}</version>
+
 </dependency>
 
 ```
 
 ## Залежності Maven
+
+Рідко коли який-небудь проект обходиться без додаткових бібліотек, і як правило, такі бібліотеки необхідно включити в збірку, якщо це не проект [OSGi](https://en.wikipedia.org/wiki/OSGi) або [WEB](https://en.wikipedia.org/wiki/Web_application). Для вирішення даного завдання в Maven-проекті необхідно використовувати залежності (dependencies), що прописуються у pom-файлі. Для кожного використовуваного в проекті артефакту необхідно задати такі параметри:
+
++ параметри GAV (`groupId`, `artifactId`, `version`) і, в окремих випадках, "необов'язковий" класифікатор `classifier`
++ області дії залежностей - `compile`, `provided`, `runtime`, `test`, `system` або `import`
++ місцерозташування залежності (для `system` області дії залежності)
+
+Оголошення залежностей відбувається в середині тегу `<dependencies>`. Кількість залежностей не обмежена. Приклад підключення залежності подано нижче:
+
+```xml
+<dependencies>
+    <dependency>
+
+        <!-- GAV координати залежності -->
+        <groupId>${package.name}</groupId>
+        <artifactId>${jar.name}</artifactId>
+        <version>${jar.version}</version>
+
+        <!-- Область видимості залежності -->
+        <scope>system</scope>
+
+        <!-- Шлях до залежноті (тільки для system scope) -->
+        <systemPath>${jar.path}</systemPath>
+
+    </dependency>
+<dependencies>
+```
+
+Інколи виникає необхідність визначати такий параметр як класифікатор - `classifier`, оскільки в іншому випадку бібліотека не буде знайдена в центральному репозиторії:
+
+```xml
+<dependencies>
+    <dependency>
+
+        <!-- Підключння бібліотеки json-lib -->
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.4</version>
+        <classifier>jdk15</classifier>
+
+    </dependency>
+<dependencies>
+```
+
+Класифікатор `classifier` використовується в тих випадках, коли розподіл артефакту за версіями є недостатнім. Наприклад, певна бібліотека (артефакт) може бути використана тільки з певною JDK (VM), або розроблена під windows або linux. Визначати цим бібліотекам різні версії - ідеологічно не правильно. Але використовуючи різні класифікатори можна вирішити дану проблему. Значення `classifier` додається в кінець назви артефакту, після його версії, перед розширенням. Наприклад: `json-lib-2.4-jdk15.jar`
 
 ### Транзитивні залежності
 
@@ -186,6 +240,7 @@ POM-файл використовує xml-теги для конфігураці
 
 ```xml
 <dependencies>
+
     <!-- Бібліотека junit -->
     <!-- Використовує транзитивну залежність hamcrest-core версії 1.3 -->
     <dependency>
@@ -194,12 +249,14 @@ POM-файл використовує xml-теги для конфігураці
         <version>4.12</version>
         <scope>test</scope>
     </dependency>
+
     <!-- Бібліотека hamcrest-core, версія 2.2 -->
     <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
         <version>2.2</version>
     </dependency>
+
 </dependencies>
 ```
 
@@ -216,6 +273,7 @@ POM-файл використовує xml-теги для конфігураці
 
 ```xml
 <dependencies>
+
     <!-- Бібліотека lib_A -->
     <!-- Використовує транзитивні залежності lib-C-1.0 та lib-Z-2.0 -->
     <dependency>
@@ -223,6 +281,7 @@ POM-файл використовує xml-теги для конфігураці
         <artifactId>lib-A</artifactId>
         <version>1.0</version>
     </dependency>
+
     <!-- Бібліотека lib-B -->
     <!-- Використовує транзитивну залежність lib-Z-1.8 -->
     <dependency>
@@ -230,6 +289,7 @@ POM-файл використовує xml-теги для конфігураці
         <artifactId>lib-B</artifactId>
         <version>1.0</version>
     </dependency>
+
 </dependencies>
 ```
 
@@ -242,6 +302,7 @@ POM-файл використовує xml-теги для конфігураці
 
 ```xml
 <dependencies>
+
     <!-- Бібліотека lib_A -->
     <!-- Використовує транзитивні залежності lib-C-1.0 та lib-Z-2.0 -->
     <dependency>
@@ -249,6 +310,7 @@ POM-файл використовує xml-теги для конфігураці
         <artifactId>lib-A</artifactId>
         <version>1.0</version>
     </dependency>
+
     <!-- Бібліотека lib-B -->
     <!-- Використовує транзитивну залежність lib-Z-1.8 -->
     <dependency>
@@ -256,11 +318,13 @@ POM-файл використовує xml-теги для конфігураці
         <artifactId>lib-B</artifactId>
         <version>1.0</version>
         <exclusions>
+
             <!-- Виключаємо транзитивну залежність lib-Z-1.8-->
             <exclusion>
                 <groupId>com.example</groupId>
                 <artifactId>lib-Z</artifactId>
             </exclusion>
+
         </exclusions>
     </dependency>
 </dependencies>
